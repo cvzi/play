@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "header.tmpl.html"}}
+<body>
+<h1>shields json for google play store app badge</h1>
+<div>
+
+<table>
+<thead>
+  <tr><th></th><th colspan="2">Values</th></tr>
+</thead>
+<tbody>
+{{range $k, $v := .placeholders}}
+  <tr><td>{{$k}}</td><td>=></td><td>{{$v}}</td></tr>
+{{end}}
+</tbody>
+</table>
+<br>
+<table class="controls">
+<tbody>
+  <tr>
+    <td>
+      <label for="label">Base URL:</label>
+    </td>
+    <td>
+       <input type="text" size="40" id="baseurl" disabled value="https://playshields.herokuapp.com/play?">
+       <input type="hidden" id="basepath" value="/play?">
+       <input type="hidden" id="baseendpoint" value="https://img.shields.io/endpoint?">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="label">App id:</label>
+    </td>
+    <td>
+      <input type="text" size="60" name="appid" id="appid" value="{{ .appid }}" placeholder="org.mozilla.firefox or https://play.google.com/store/apps/details?id=...">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="label">Label:</label>
+    </td>
+    <td>
+      <input type="text" size="60" name="label" id="label" value="{{ .label }}">
+      <br class="mobile" />
+      {{range $k, $v := .placeholders}}
+        <span class="addplaceholder" onclick="this.parentNode.querySelector('input').value += this.textContent" title="{{$v}}">{{$k}}</span>
+      {{end}}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="message">Message:</label>
+    </td>
+    <td>
+      <input type="text" size="60" name="message" id="message" value="{{ .message }}">
+      <br class="mobile" />
+      {{range $k, $v := .placeholders}}
+        <span class="addplaceholder" onclick="this.parentNode.querySelector('input').value += this.textContent" title="{{$v}}">{{$k}}</span>
+      {{end}}
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2"><button id="go">Go</button></td>
+  </tr>
+  <tr>
+    <td>URL:</td>
+    <td>
+      <input type="text" size="60" data-desktop-size="100" data-mobile-size="60" id="jsonurl">
+      <br class="mobile" />
+      Copy this into the form at <br class="mobile" /><a href="https://shields.io/endpoint" target="_blank">https://shields.io/endpoint</a> to customize color/logo
+    </td>
+  </tr>
+  <tr style="color:silver" class="desktop">
+    <td>JSON:</td>
+    <td><pre id="json"></pre></td>
+  </tr>
+  <tr>
+    <td>Badge URL:</td>
+    <td><textarea id="shieldurl"></textarea><br><span class="copy">Copy<span class="status"></span></span></td>
+  </tr>
+  <tr>
+    <td>Badge:</td>
+    <td><img id="shield" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Badge preview"></td>
+  </tr>
+  <tr>
+    <td>Customized Badge URL:</td>
+    <td><textarea id="shieldurlstyled"></textarea><br><span class="copy">Copy<span class="status"></span></span></td>
+  </tr>
+  <tr>
+    <td>Customized Badge :</td>
+    <td><img id="shieldstyled" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Customized badge preview"></td>
+  </tr>
+
+</tbody>
+</table>
+
+</div>
+
+<div id="copymenu" style="display:none">
+  <ul>
+  </ul>
+</div>
+
+<br>
+<br>
+<hr>
+Source code at <a href="https://github.com/cvzi/playshields">github</a>
+<br>
+<br>
+<a href="/static/privacy.html">Privacy policy</a>
+
+<div>
+  <!-- https://github.com/tholman/github-corners -->
+  <a href="https://github.com/cvzi/playshields" class="github-corner" aria-label="View source on GitHub" title="View source on GitHub">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#97ca00; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+      <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+      <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+      <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+  </a>
+</div>
+
+
+</body>
+</html>
