@@ -1,0 +1,56 @@
+/* Google fonts Lekton, latin */
+@font-face {
+  font-family: 'Lekton';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lekton'), local('Lekton-Regular'), url(https://cvzi.github.io/play/Lekton/Lekton.woff2) format('woff2'), url(https://cvzi.github.io/play/Lekton/Lekton.ttf) format('truetype');
+}
+
+body {
+  font-family:'Lekton', sans-serif;
+  color:#553344;
+}
+
+.addplaceholder {
+  cursor:pointer;
+  color:silver
+}
+.addplaceholder:hover {
+  color:black;
+}
+.copy {
+  cursor:copy;
+  color:silver
+}
+.copy:hover {
+  color:black;
+}
+.copy .status {
+  color:green
+}
+#shieldurl,#shieldurlstyled{
+  width:60%
+}
+#copymenu {
+  position:absolute;
+  background:#f0f0f0;
+  box-shadow: 2px 2px 2px #aaa;
+  border:1px solid gray;
+  border-radius:0.2em
+}
+#copymenu ul {
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+#copymenu ul li {
+  cursor:copy;
+  border-radius:0.2em;
+  padding:0px 5px; 
+}
+#copymenu ul li:hover {
+  background:#aaa;
+}
+
+/* https://github.com/tholman/github-corners */
+.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}
