@@ -36,7 +36,7 @@ const appIDPattern = /[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*/
 const playStorePlaceHolders = {
   $version: 'App version',
   $installs: 'Installs',
-  $intinstalls: 'Precise installs',
+  $totalinstalls: 'Precise installs',
   $shortinstalls: 'Shorter installs',
   $updated: 'Last update',
   $android: 'Required min. Android version',
@@ -126,6 +126,21 @@ function replacePlaceHolders (str, app) {
   return str
 }
 
+function getOrDefault (obj, indices, fallback = '', post = (x) => x) {
+  let i
+  try {
+    for (i = 0; i < indices.length; i++) {
+      obj = obj[indices[i]]
+    }
+    if (obj != null) {
+      return post(obj)
+    }
+  } catch (e) {
+    console.warn(`at i=${i} in ${indices}`, e, '\nin obj:', obj)
+  }
+  return fallback
+}
+
 async function getPlayStore (packageName, event) {
   const url = `https://play.google.com/store/apps/details?id=${encodeURIComponent(packageName)}&gl=US`
   const content = await cachedFetchText(url, fetchConfig, event)
@@ -139,20 +154,20 @@ async function getPlayStore (packageName, event) {
   const fallback = 'Varies with device'
 
   const result = {
-    name: json[1][2][0],
-    installs: json[1][2][13][0],
-    intinstalls: json[1][2][13][2],
-    shortinstalls: json[1][2][13][3],
-    version: json[1][2][140][0][0] || fallback,
-    updated: json[1][2][145][0][0] || fallback,
-    targetandroid: json[1][2][140][1][0][0][1] || fallback,
-    targetsdk: json[1][2][140][1][0][0][0] || fallback,
-    android: json[1][2][140][1][1][0][0][1] || fallback,
-    minsdk: json[1][2][140][1][1][0][0][0] || fallback,
-    rating: json[1][2][51][0][0],
-    floatrating: json[1][2][51][0][1],
-    friendly: json[1][2][9][0],
-    published: json[1][2][10][0] || fallback
+    name: getOrDefault(json, [1, 2, 0], fallback),
+    installs: getOrDefault(json, [1, 2, 13, 0], fallback),
+    totalinstalls: getOrDefault(json, [1, 2, 13, 2], fallback, (n) => n.toLocaleString()),
+    shortinstalls: getOrDefault(json, [1, 2, 13, 3], fallback),
+    version: getOrDefault(json, [1, 2, 140, 0, 0], fallback),
+    updated: getOrDefault(json, [1, 2, 145, 0, 0], fallback),
+    targetandroid: getOrDefault(json, [1, 2, 140, 1, 0, 0, 1], fallback),
+    targetsdk: getOrDefault(json, [1, 2, 140, 1, 0, 0, 0], fallback),
+    android: getOrDefault(json, [1, 2, 140, 1, 1, 0, 0, 1], fallback),
+    minsdk: getOrDefault(json, [1, 2, 140, 1, 1, 0, 0, 0], fallback),
+    rating: getOrDefault(json, [1, 2, 51, 0, 0], fallback),
+    floatrating: getOrDefault(json, [1, 2, 51, 0, 1], fallback),
+    friendly: getOrDefault(json, [1, 2, 9, 0], fallback),
+    published: getOrDefault(json, [1, 2, 10, 0], fallback)
   }
 
   return result
