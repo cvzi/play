@@ -53,16 +53,15 @@ const playStorePlaceHolders = {
 const fetchConfig = {
   cf: {
     // Always cache this fetch regardless of content type
-    // for a max of 1 day before revalidating the resource
-    cacheTtl: 60 * 60 * 24,
+    // for a max of 5 hours before revalidating the resource
+    cacheTtl: 60 * 60 * 5,
     cacheEverything: true
   }
 }
 
 const responseConfigJSON = {
   headers: {
-    'content-type': 'application/json; charset=utf-8',
-    'source-code': 'gist.github.com/cvzi/e5d10613e50d2c4283c97fa1a861933e'
+    'content-type': 'application/json; charset=utf-8'
   }
 }
 
@@ -74,13 +73,24 @@ const responseConfigHTML = {
 
 async function cachedFetchText (url, fetchConfig, event) {
   if (PLAY_CACHE) {
-    let data = await PLAY_CACHE.get(url, { type: 'text' })
+    let data = null
+    try {
+      data = await PLAY_CACHE.get(url, { type: 'text' })
+    } catch (e) {
+      // Catch error 426 'Too many requests' on free plan
+      console.warn(e)
+    }
     if (!data) {
       data = await (await fetch(url, fetchConfig)).text()
-      if (event instanceof Event) {
-        event.waitUntil(PLAY_CACHE.put(url, data, { expirationTtl: 1800 }))
-      } else {
-        await PLAY_CACHE.put(url, data, { expirationTtl: 1800 })
+      try {
+        if (event instanceof Event) {
+          event.waitUntil(PLAY_CACHE.put(url, data, { expirationTtl: 6 * 60 * 60 }))
+        } else {
+          await PLAY_CACHE.put(url, data, { expirationTtl: 6 * 60 * 60 })
+        }
+      } catch (e) {
+        // Catch error 426 'Too many requests' on free plan
+        console.warn(e)
       }
     } else {
       console.log('Cache hit: ' + url)
@@ -177,7 +187,7 @@ function errorJSON (message) {
   return new Response(JSON.stringify({
     schemaVersion: 1,
     label: 'error',
-    message: message,
+    message: '' + message,
     isError: true
   }), responseConfigJSON)
 }
@@ -193,26 +203,24 @@ async function handleBadge (event, url) {
   if (!m || !m[0]) {
     return errorJSON('invalid app id format')
   }
-  const playData = await getPlayStore(m[0], event)
+  let playData
+  try {
+    playData = await getPlayStore(m[0], event)
+  } catch (e) {
+    console.error(e)
+    return errorJSON(e)
+  }
 
   let label = url.searchParams.get('l') || url.searchParams.get('label') || 'play'
   let message = url.searchParams.get('m') || url.searchParams.get('message') || '$version'
 
-  if (label.length > 1000) {
-    label = label.substring(0, 1000)
-  }
-  if (message.length > 1000) {
-    message = message.substring(0, 1000)
-  }
-
-  message = replacePlaceHolders(message, playData)
-
-  label = replacePlaceHolders(label, playData)
+  label = replacePlaceHolders(label.substring(0, 1000), playData)
+  message = replacePlaceHolders(message.substring(0, 1000), playData)
 
   return new Response(JSON.stringify({
     schemaVersion: 1,
-    label: label,
-    message: message,
+    label,
+    message,
     cacheSeconds: 3600
   }), responseConfigJSON)
 }
