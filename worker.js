@@ -151,8 +151,22 @@ function getOrDefault (obj, indices, fallback = '', post = (x) => x) {
   return fallback
 }
 
+function language (event) {
+  if (event && event.request) {
+    const accept = event.request.headers.get('accept-language')
+    if (accept) {
+      const m = accept.match(/[a-z]{2}-([a-z]{2})/i)
+      if (m) {
+        return `&gl=${encodeURIComponent(m[1])}&hl=${encodeURIComponent(m[0])}`
+      }
+    }
+  }
+  return ''
+}
+
 async function getPlayStore (packageName, event) {
-  const url = `https://play.google.com/store/apps/details?id=${encodeURIComponent(packageName)}&gl=US`
+  const lang = language(event)
+  const url = `https://play.google.com/store/apps/details?id=${encodeURIComponent(packageName)}${lang}`
   const content = await cachedFetchText(url, fetchConfig, event)
 
   const parts = content.split('AF_initDataCallback({').slice(1).map(v => v.split('</script>')[0])
@@ -248,5 +262,5 @@ async function handleRequest (request, event) {
 }
 
 addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
+  event.respondWith(handleRequest(event.request, event))
 })
