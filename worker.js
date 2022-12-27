@@ -170,6 +170,9 @@ async function getPlayStore (packageName, event) {
   const content = await cachedFetchText(url, fetchConfig, event)
 
   const parts = content.split('AF_initDataCallback({').slice(1).map(v => v.split('</script>')[0])
+  if (parts.length === 0) {
+    throw new Error(`Failed to extract data from play store [${packageName}]`)
+  }
   const data = parts.filter(s => s.indexOf(`["${packageName}"],`) !== -1)[0].trim()
   let arr = data.split('data:', 2)[1].split('sideChannel:')[0].trim()
   arr = arr.substring(0, arr.length - 1) // remove trailing comma
