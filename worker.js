@@ -72,7 +72,7 @@ const responseConfigHTML = {
   }
 }
 
-async function cachedFetchText(url, fetchConfig, ctx) {
+async function cachedFetchText (url, fetchConfig, ctx) {
   if (typeof PLAY_CACHE !== 'undefined') {
     let data = null
 
@@ -105,7 +105,7 @@ async function cachedFetchText(url, fetchConfig, ctx) {
   }
 }
 
-function replaceVars(text, templateVars) {
+function replaceVars (text, templateVars) {
   const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   for (const name in templateVars) {
     text = text.replace(new RegExp('\\{\\{\\s*' + escapeRegExp(name) + '\\s*\\}\\}', 'gm'), templateVars[name])
@@ -113,7 +113,7 @@ function replaceVars(text, templateVars) {
   return text
 }
 
-async function template(templateUrl, templateVars) {
+async function template (templateUrl, templateVars) {
   let html = await (await fetch(templateUrl, fetchConfig)).text()
 
   html = html.replace(/\{\{items:(\w+)\}\}([\s\S]*?)\{\{end\}\}/gm, function (wholeMatch, name, body) {
@@ -133,14 +133,14 @@ async function template(templateUrl, templateVars) {
   return new Response(html, responseConfigHTML)
 }
 
-function replacePlaceHolders(str, app) {
+function replacePlaceHolders (str, app) {
   for (const placeholder in playStorePlaceHolders) {
     str = str.replace(placeholder, app[placeholder.substring(1)])
   }
   return str
 }
 
-function getOrDefault(obj, indices, fallback = '', post = (x) => x) {
+function getOrDefault (obj, indices, fallback = '', post = (x) => x) {
   let i
   try {
     for (i = 0; i < indices.length; i++) {
@@ -155,8 +155,8 @@ function getOrDefault(obj, indices, fallback = '', post = (x) => x) {
   return fallback
 }
 
-function language(hl, gl) {
-  let languageQuery = []
+function language (hl, gl) {
+  const languageQuery = []
   if (hl) {
     languageQuery.push(`hl=${hl}`)
   }
@@ -164,12 +164,12 @@ function language(hl, gl) {
     languageQuery.push(`gl=${gl}`)
   }
 
-  if (languageQuery.length == 0) return ''
+  if (languageQuery.length === 0) return ''
 
-  return `&${languageQuery.join("&")}`
+  return `&${languageQuery.join('&')}`
 }
 
-async function getPlayStore(packageName, env, ctx, hl, gl) {
+async function getPlayStore (packageName, env, ctx, hl, gl) {
   const lang = language(hl, gl)
   const url = `https://play.google.com/store/apps/details?id=${encodeURIComponent(packageName)}${lang}`
   const content = await cachedFetchText(url, fetchConfig, ctx)
@@ -205,7 +205,7 @@ async function getPlayStore(packageName, env, ctx, hl, gl) {
   return result
 }
 
-function errorJSON(message) {
+function errorJSON (message) {
   return new Response(JSON.stringify({
     schemaVersion: 1,
     label: 'error',
@@ -214,7 +214,7 @@ function errorJSON(message) {
   }), responseConfigJSON)
 }
 
-async function handleBadge(env, ctx, url) {
+async function handleBadge (env, ctx, url) {
   const appId = url.searchParams.get('i') || url.searchParams.get('id') || ''
 
   if (!appId) {
@@ -251,7 +251,7 @@ async function handleBadge(env, ctx, url) {
   }), responseConfigJSON)
 }
 
-function handleIndex(url) {
+function handleIndex (url) {
   const templateVars = {
     appid: url.searchParams.get('i') || url.searchParams.get('id') || 'org.mozilla.firefox',
     label: url.searchParams.get('l') || url.searchParams.get('label') || 'Android',
@@ -264,7 +264,7 @@ function handleIndex(url) {
   return template('https://cvzi.github.io/play/index.html', templateVars)
 }
 
-async function handleRequest(request, env, ctx) {
+async function handleRequest (request, env, ctx) {
   const url = new URL(request.url)
   if (url.pathname.startsWith('/play')) {
     return handleBadge(env, ctx, url)
@@ -276,7 +276,7 @@ async function handleRequest(request, env, ctx) {
 }
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch (request, env, ctx) {
     return handleRequest(request, env, ctx)
-  },
-};
+  }
+}
