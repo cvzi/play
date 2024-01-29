@@ -15,6 +15,8 @@ function main (ev) {
   document.getElementById('baseurl').addEventListener('change', updateUrls)
   document.getElementById('baseendpoint').addEventListener('change', updateUrls)
   document.getElementById('appid').addEventListener('change', updateUrls)
+  document.getElementById('gl').addEventListener('change', updateUrls)
+  document.getElementById('hl').addEventListener('change', updateUrls)
   document.getElementById('label').addEventListener('change', updateUrls)
   document.getElementById('message').addEventListener('change', updateUrls)
   document.getElementById('baseurl').addEventListener('keyup', updateUrls)
@@ -39,6 +41,8 @@ function composeJsonUrl() {
   const base = document.getElementById('baseurl').value
   const endpoint = document.getElementById('baseendpoint').value
   let appid = document.getElementById('appid').value
+  const gl = document.getElementById('gl').value
+  const hl = document.getElementById('hl').value
   const label = document.getElementById('label').value
   const message = document.getElementById('message').value
 
@@ -46,7 +50,7 @@ function composeJsonUrl() {
     appid = appid.split('id=')[1].split('&')[0]
   }
 
-  const jsonurl = base + 'i=' + encodeURIComponent(appid) + '&l=' + encodeURIComponent(label).replace('%24', '$') + '&m=' + encodeURIComponent(message).replace('%24', '$')
+  const jsonurl = `${base}i=${encodeURIComponent(appid)}&gl=${encodeURIComponent(gl)}&hl=${encodeURIComponent(hl)}&l=${encodeURIComponent(label).replace('%24', '$')}&m=${encodeURIComponent(message).replace('%24', '$')}`
 
   return jsonurl
 }
