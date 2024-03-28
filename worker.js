@@ -178,10 +178,13 @@ async function getPlayStore (packageName, env, ctx, hl, gl) {
   if (parts.length === 0) {
     throw new Error(`Failed to extract data from play store [${packageName}]`)
   }
-  const data = parts.filter(s => s.indexOf(`["${packageName}"],`) !== -1)[0].trim()
-  let arr = data.split('data:', 2)[1].split('sideChannel:')[0].trim()
-  arr = arr.substring(0, arr.length - 1) // remove trailing comma
-  const json = JSON.parse(arr)
+
+  const dataString = parts.filter(s => s.indexOf(`["${packageName}"],`) !== -1)[0].trim()
+  const noDataString = dataString.substring(dataString.indexOf('data:') + 5)
+  let arrString = noDataString.split('sideChannel:')[0].trim()
+  arrString = arrString.substring(0, arrString.length - 1) // remove trailing comma
+
+  const json = JSON.parse(arrString)
 
   const fallback = 'Varies with device'
 
